@@ -13,15 +13,16 @@ func New(env constants.Env) *slog.Logger {
 	}
 	var handler slog.Handler
 
-	if env.IsProduction() {
+	switch env {
+	case constants.Production:
 		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 			Level: slog.LevelInfo,
 		})
-	} else if env.IsStaging() {
+	case constants.Staging:
 		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 			Level: slog.LevelDebug,
 		})
-	} else {
+	default:
 		handler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 			Level: slog.LevelDebug,
 		})
