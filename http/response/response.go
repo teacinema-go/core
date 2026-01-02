@@ -16,11 +16,29 @@ func Success[T any](message string, data T) *Response[T] {
 	}
 }
 
+// SuccessNoData creates an successful response with empty data
+func SuccessNoData(message string) *Response[struct{}] {
+	return &Response[struct{}]{
+		Status:  true,
+		Message: message,
+		Data:    struct{}{},
+	}
+}
+
 // Error creates an error response with generic data
 func Error[T any](message string, data T) *Response[T] {
 	return &Response[T]{
 		Status:  false,
 		Message: message,
 		Data:    data,
+	}
+}
+
+// ErrorNoData creates an error response with empty data
+func ErrorNoData(message string) *Response[struct{}] {
+	return &Response[struct{}]{
+		Status:  false,
+		Message: message,
+		Data:    struct{}{},
 	}
 }
