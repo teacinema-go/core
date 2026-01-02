@@ -1,31 +1,24 @@
 package response
 
-type Response struct {
-	Status  bool   `json:"status"`
-	Message string `json:"message"`
-	Data    Data   `json:"data"`
+// Response standard API response structure with generic data type
+type Response[T any] struct {
+	Status  bool   `json:"status" example:"true"`
+	Message string `json:"message" example:"ok"`
+	Data    T      `json:"data"`
 }
 
-type Data map[string]any
-
-func NewSuccessResponse(message string, data Data) *Response {
-	if data == nil {
-		data = Data{}
-	}
-
-	return &Response{
+// Success creates a successful response with generic data
+func Success[T any](message string, data T) *Response[T] {
+	return &Response[T]{
 		Status:  true,
 		Message: message,
 		Data:    data,
 	}
 }
 
-func NewErrorResponse(message string, data Data) *Response {
-	if data == nil {
-		data = Data{}
-	}
-
-	return &Response{
+// Error creates an error response with generic data
+func Error[T any](message string, data T) *Response[T] {
+	return &Response[T]{
 		Status:  false,
 		Message: message,
 		Data:    data,
