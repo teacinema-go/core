@@ -16,17 +16,28 @@ func New(env constants.Env) *slog.Logger {
 	switch env {
 	case constants.Production:
 		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level: slog.LevelInfo,
+			Level:     slog.LevelInfo,
+			AddSource: true,
 		})
 	case constants.Staging:
 		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level: slog.LevelDebug,
+			Level:     slog.LevelDebug,
+			AddSource: true,
 		})
 	default:
 		handler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			Level: slog.LevelDebug,
+			Level:     slog.LevelDebug,
+			AddSource: true,
 		})
 	}
 
 	return slog.New(handler)
+}
+
+func WithMethod(logger *slog.Logger, method string) *slog.Logger {
+	return logger.With(slog.String("method", method))
+}
+
+func WithService(logger *slog.Logger, service string) *slog.Logger {
+	return logger.With(slog.String("service", service))
 }
