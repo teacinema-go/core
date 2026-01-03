@@ -33,11 +33,3 @@ func New(env constants.Env) *slog.Logger {
 
 	return slog.New(handler)
 }
-
-func WithMethod(logger *slog.Logger, method string) *slog.Logger {
-	return logger.With(slog.String("method", method))
-}
-
-func WithService(logger *slog.Logger, service string) *slog.Logger {
-	return logger.With(slog.String("service", service))
-}
