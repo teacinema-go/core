@@ -3,33 +3,76 @@ package logger
 import (
 	"log/slog"
 	"os"
+	"sync"
 
 	"github.com/teacinema-go/core/constants"
 )
 
-func New(env constants.Env) *slog.Logger {
-	if env == "" {
-		env = constants.Development
-	}
-	var handler slog.Handler
+var (
+	log  *slog.Logger
+	once sync.Once
+)
 
+func Init(env constants.Env) {
+	once.Do(func() {
+		if env == "" {
+			env = constants.Development
+		}
+
+		opts := &slog.HandlerOptions{
+			Level:     levelByEnv(env),
+			AddSource: env != constants.Production,
+		}
+
+		var handler slog.Handler
+		if env == constants.Development {
+			handler = slog.NewTextHandler(os.Stdout, opts)
+		} else {
+			handler = slog.NewJSONHandler(os.Stdout, opts)
+		}
+
+		log = slog.New(handler).With(
+			slog.String("env", string(env)),
+		)
+
+		slog.SetDefault(log)
+	})
+}
+
+func levelByEnv(env constants.Env) slog.Level {
 	switch env {
 	case constants.Production:
-		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level:     slog.LevelInfo,
-			AddSource: true,
-		})
+		return slog.LevelInfo
 	case constants.Staging:
-		handler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level:     slog.LevelDebug,
-			AddSource: true,
-		})
+		return slog.LevelDebug
 	default:
-		handler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			Level:     slog.LevelDebug,
-			AddSource: true,
-		})
+		return slog.LevelDebug
 	}
+}
 
-	return slog.New(handler)
+func get() *slog.Logger {
+	if log == nil {
+		return slog.Default()
+	}
+	return log
+}
+
+func Debug(msg string, args ...any) {
+	get().Debug(msg, args...)
+}
+
+func Info(msg string, args ...any) {
+	get().Info(msg, args...)
+}
+
+func Warn(msg string, args ...any) {
+	get().Warn(msg, args...)
+}
+
+func Error(msg string, args ...any) {
+	get().Error(msg, args...)
+}
+
+func With(args ...any) *slog.Logger {
+	return get().With(args...)
 }
