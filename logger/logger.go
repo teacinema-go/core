@@ -16,7 +16,7 @@ var (
 func Init(env constants.Env) {
 	once.Do(func() {
 		if env == "" {
-			env = constants.Development
+			env = constants.Local
 		}
 
 		opts := &slog.HandlerOptions{
@@ -25,9 +25,10 @@ func Init(env constants.Env) {
 		}
 
 		var handler slog.Handler
-		if env == constants.Development {
+		switch env {
+		case constants.Local:
 			handler = slog.NewTextHandler(os.Stdout, opts)
-		} else {
+		default:
 			handler = slog.NewJSONHandler(os.Stdout, opts)
 		}
 
@@ -43,8 +44,6 @@ func levelByEnv(env constants.Env) slog.Level {
 	switch env {
 	case constants.Production:
 		return slog.LevelInfo
-	case constants.Staging:
-		return slog.LevelDebug
 	default:
 		return slog.LevelDebug
 	}

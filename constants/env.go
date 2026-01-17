@@ -6,6 +6,7 @@ const (
 	Production  Env = "production"
 	Staging     Env = "staging"
 	Development Env = "development"
+	Local       Env = "local"
 )
 
 func (e Env) String() string {
@@ -22,4 +23,8 @@ func (e Env) IsStaging() bool {
 
 func (e Env) IsDevelopment() bool {
 	return e == Development
+}
+
+func (e Env) IsLocal() bool {
+	return e == Local
 }
